@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sunny 內部稽核複習站</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#1f2937;--muted:#64748b;--main:#365486;--main2:#7fc7d9;--ok:#16a34a;--bad:#dc2626;--line:#e5e7eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",Arial,sans-serif;background:var(--bg);color:var(--text)}
+body.dark{--bg:#101827;--card:#172033;--text:#eef2ff;--muted:#aab4c8;--main:#7fc7d9;--main2:#365486;--line:#334155}
+header{background:linear-gradient(135deg,#365486,#7fc7d9);color:white;padding:26px 18px;text-align:center}
+header h1{margin:0;font-size:30px}
+header p{margin:8px 0 0;opacity:.95}
+.wrap{max-width:1100px;margin:auto;padding:18px}
+.nav{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 18px}
+.nav button,.btn{border:0;border-radius:999px;padding:10px 16px;background:var(--card);color:var(--text);box-shadow:0 2px 8px #0001;cursor:pointer;font-weight:700}
+.nav button.active,.btn.primary{background:var(--main);color:white}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 6px 20px #0000000d}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:linear-gradient(180deg,#ffffff20,#00000005);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+.stat b{font-size:24px;color:var(--main)}
+h2{margin:0 0 12px}
+.small{color:var(--muted);font-size:14px;line-height:1.7}
+.qtitle{font-size:20px;font-weight:800;line-height:1.55}
+.badge{display:inline-block;background:#e0f2fe;color:#075985;border-radius:999px;padding:5px 10px;font-size:13px;font-weight:800;margin-right:6px}
+body.dark .badge{background:#0f3550;color:#b8e6ff}
+.option{display:block;width:100%;text-align:left;margin:10px 0;padding:14px;border:1.5px solid var(--line);border-radius:14px;background:transparent;color:var(--text);font-size:16px;cursor:pointer;line-height:1.45}
+.option:hover{border-color:var(--main)}
+.option.correct{border-color:var(--ok);background:#dcfce7;color:#14532d}
+.option.wrong{border-color:var(--bad);background:#fee2e2;color:#7f1d1d}
+body.dark .option.correct{background:#12351f;color:#c8ffd8}
+body.dark .option.wrong{background:#3b1515;color:#ffd0d0}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.feedback{padding:12px;border-radius:14px;margin-top:12px;display:none;line-height:1.7}
+.feedback.ok{display:block;background:#dcfce7;color:#14532d}
+.feedback.bad{display:block;background:#fee2e2;color:#7f1d1d}
+body.dark .feedback.ok{background:#12351f;color:#c8ffd8}
+body.dark .feedback.bad{background:#3b1515;color:#ffd0d0}
+.progress{height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#365486,#7fc7d9);width:0%}
+.quickcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.quick{border:1px solid var(--line);border-radius:16px;padding:15px;background:linear-gradient(180deg,#fff,#f8fafc)}
+body.dark .quick{background:#172033}
+.quick b{color:var(--main)}
+.hidden{display:none!important}
+.listItem{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.footer{text-align:center;color:var(--muted);font-size:13px;padding:25px}
+@media(max-width:800px){.grid,.quickcards{grid-template-columns:1fr 1fr}header h1{font-size:24px}.qtitle{font-size:18px}}
+@media(max-width:520px){.grid,.quickcards{grid-template-columns:1fr}.wrap{padding:12px}.nav button,.btn{width:100%}.actions .btn{width:100%}}
+</style>
+</head>
+<body>
+<header>
+<h1>📚 Sunny 內部稽核複習站</h1>
+<p>37 題分類測驗｜錯題本｜考前速讀｜手機平板可用</p>
+</header>
+
+<div class="wrap">
+  <div class="nav">
+    <button class="active" onclick="showPage('home',this)">首頁</button>
+    <button onclick="startQuiz('第一回',this)">第一回</button>
+    <button onclick="startQuiz('第二回',this)">第二回</button>
+    <button onclick="startQuiz('第三回',this)">第三回</button>
+    <button onclick="startQuiz('第四回',this)">第四回</button>
+    <button onclick="startQuiz('全部',this)">全部混合</button>
+    <button onclick="showWrong(this)">錯題本</button>
+    <button onclick="showPage('quick',this)">考前速讀</button>
+    <button onclick="toggleDark()">🌙 深色</button>
+  </div>
+
+  <section id="home" class="page">
+    <div class="card">
+      <h2>今天要練哪一回？</h2>
+      <p class="small">建議先照第一回到第四回練一次，最後再按「全部混合」模擬考。</p>
+      <div class="grid">
+        <div class="stat"><b>10</b><br>第一回</div>
+        <div class="stat"><b>10</b><br>第二回</div>
+        <div class="stat"><b>10</b><br>第三回</div>
+        <div class="stat"><b>7</b><br>第四回</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>🔥 高命中重點</h2>
+      <div class="quickcards">
+        <div class="quick"><b>QAIP</b><br><span class="small">內部評核＋外部評核，外部評核至少每 5 年一次。</span></div>
+        <div class="quick"><b>舞弊三角</b><br><span class="small">誘因或壓力、機會、態度或合理化。</span></div>
+        <div class="quick"><b>風險承擔</b><br><span class="small">管理階層承擔風險，內部稽核負責評估與溝通。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz" class="page hidden">
+    <div class="card">
+      <span id="quizBadge" class="badge">測驗</span>
+      <div class="progress"><div id="bar"></div></div>
+      <p class="small" id="counter"></p>
+      <div class="qtitle" id="questionText"></div>
+      <div id="options"></div>
+      <div id="feedback" class="feedback"></div>
+      <div class="actions">
+        <button class="btn primary" id="nextBtn" onclick="nextQuestion()">下一題</button>
+        <button class="btn" onclick="restartQuiz()">重新開始本回</button>
+        <button class="btn" onclick="showPage('home')">回首頁</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="page hidden">
+    <div class="card">
+      <h2>測驗完成 🎉</h2>
+      <div class="grid">
+        <div class="stat"><b id="scoreText">0</b><br>分數</div>
+        <div class="stat"><b id="rightText">0</b><br>答對</div>
+        <div class="stat"><b id="wrongText">0</b><br>答錯</div>
+        <div class="stat"><b id="rateText">0%</b><br>答對率</div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" onclick="restartQuiz()">再練一次</button>
+        <button class="btn" onclick="showWrong()">看錯題</button>
+        <button class="btn" onclick="showPage('quick')">考前速讀</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="wrong" class="page hidden">
+    <div class="card">
+      <h2>❌ 錯題本</h2>
+      <p class="small">錯題會存在目前瀏覽器，清除瀏覽資料後會消失。</p>
+      <div id="wrongList"></div>
+      <div class="actions">
+        <button class="btn primary" onclick="practiceWrong()">重練錯題</button>
+        <button class="btn" onclick="clearWrong()">清空錯題</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="quick" class="page hidden">
+    <div class="card">
+      <h2>⚡ 考前速讀</h2>
+      <div class="quickcards">
+        <div class="quick"><b>內部評核</b><br><span class="small">包括持續性監督與定期評核。</span></div>
+        <div class="quick"><b>持續性監督</b><br><span class="small">日常督導、覆核、例行政策與實務。</span></div>
+        <div class="quick"><b>外部評核</b><br><span class="small">至少每 5 年一次，涵蓋確認性與諮詢工作。</span></div>
+        <div class="quick"><b>內部評核報告</b><br><span class="small">至少每年向高階主管及董事會報告。</span></div>
+        <div class="quick"><b>範圍受限</b><br><span class="small">要向董事會與高階主管報告潛在影響。</span></div>
+        <div class="quick"><b>追蹤機制</b><br><span class="small">改進初期、過程中、完成後都要追蹤。</span></div>
+        <div class="quick"><b>舞弊</b><br><span class="small">偽造竄改、故意誤用會計原則、挪用資產皆屬舞弊。</span></div>
+        <div class="quick"><b>舞弊三角</b><br><span class="small">誘因或壓力、機會、態度或行為合理化。</span></div>
+        <div class="quick"><b>管理階層風險</b><br><span class="small">內部稽核不能替管理階層承擔或處理風險。</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="footer">Sunny Audit Review｜單一 HTML，可直接上傳 GitHub Pages</div>
+
+<script>
+const QUESTIONS = [{"set": "第一回", "q": "內部評核應包括持續性監督與定期評核，下列何者不屬於持續性監督？", "options": ["日常督導與覆核", "管理內部稽核單位之例行性政策及實務", "聘請會計師執行內部控制專案審查", "評估對於職業道德規範之遵循情形"], "answer": "聘請會計師執行內部控制專案審查", "note": "外部人員執行專案審查不屬於內部持續性監督。"}, {"set": "第一回", "q": "內部稽核單位的外部評核，適用於下面哪一個項目？", "options": ["只針對內部稽核單位之遵循準則", "只針對內部稽核覆蓋範圍之有效性", "只針對內部控制之適足性", "針對確認性和諮詢工作的所有方面"], "answer": "針對確認性和諮詢工作的所有方面", "note": "外部評核涵蓋內部稽核活動整體，包括確認與諮詢工作。"}, {"set": "第一回", "q": "內部稽核主管以持續監控的方式，向高階主管及董事會報告內部評核，請問頻率至少多久一次？", "options": ["每月一次", "每季一次", "每年一次", "每半年一次"], "answer": "每年一次", "note": "內部評核結果至少每年向高階主管及董事會報告。"}, {"set": "第一回", "q": "內部稽核部門持續進行品質保證與改進計畫，可聘請外部機構進行評估，並將評估結果向高階主管及董事會報告，請問評核頻率至少多久一次？", "options": ["每年一次", "每三年一次", "每五年一次", "無需外部評估，僅執行自我評估即可"], "answer": "每五年一次", "note": "外部評核通常至少每五年一次。"}, {"set": "第一回", "q": "針對品質保證與改進計畫，下列何者錯誤？", "options": ["內部評核和外部評核均屬於品質保證與改進計畫", "內部評核可以由公司內充分瞭解內部稽核實務的其他人員執行", "內部評核可由部門內部人員參與，這樣可以作為一種培訓", "內部評核包含對已完成之工作的品質和督導的評估，但可以不包括績效指標"], "answer": "內部評核包含對已完成之工作的品質和督導的評估，但可以不包括績效指標", "note": "品質保證與改進計畫通常也會包含績效衡量與持續改善。"}, {"set": "第一回", "q": "內部稽核主管須有效管理內部稽核單位，以確保對機構產生價值。請問下列何者情況，不是內部稽核單位管理的專案（目標）？", "options": ["內部稽核單位達到一般公認審計準則所含之目的及責任", "內部稽核單位遵循國際內部稽核準則", "內部稽核單位個別成員遵守職業道德規範遵循國際內部稽核準則", "內部稽核單位考慮可能影響機構之趨勢及新興議題"], "answer": "內部稽核單位達到一般公認審計準則所含之目的及責任", "note": "內部稽核主要依循內部稽核相關準則，而非一般公認審計準則作為管理目標。"}, {"set": "第一回", "q": "如果面臨強加的稽核範圍受限時，內部稽核主管應該？", "options": ["推遲該稽核業務，直至該限制消除為止", "向董事會和高階主管報告該範圍限制所造成的潛在影響", "增加對可疑活動進行稽核的頻率", "為該業務分派更多有經驗的稽核人員"], "answer": "向董事會和高階主管報告該範圍限制所造成的潛在影響", "note": "範圍受限須向適當治理階層溝通其影響。"}, {"set": "第一回", "q": "內部稽核人員發現即使是經過相關方同意，糾正行動有時仍未得到執行，那麼內部稽核人員應該？", "options": ["決定必要的跟蹤檢查的範圍", "請管理層決定何時進行跟蹤檢查，因為這是管理層的最終責任", "只有當管理層要求內部稽核人員協助時，才決定進行跟蹤檢查", "將所有的稽核發現和它們對經營活動的重要性寫成一份跟蹤檢查報告"], "answer": "決定必要的跟蹤檢查的範圍", "note": "內部稽核應安排必要追蹤，確認改善行動是否落實。"}, {"set": "第一回", "q": "下列何者不是內部稽核的持續性監督貫穿內部稽核專案的全部過程中進行品質控制？", "options": ["事前品質控制", "事中品質控制", "事後品質控制", "以上皆是"], "answer": "以上皆是", "note": "事前、事中、事後都屬於品質控制，因此負面題答案為以上皆是。"}, {"set": "第一回", "q": "下列何者不是事中品質控制？", "options": ["對稽核人員的工作內容、個人行為進行監督", "確保每位稽核人員的工作都符合企業內部稽核標準", "對內部稽核人員進行培訓", "對稽核人員的工作內容、個人行為進行監督"], "answer": "對內部稽核人員進行培訓", "note": "培訓偏向事前準備或能力養成，非事中品質控制。"}, {"set": "第二回", "q": "內部稽核人員主動提供新見解及考量未來影響時，請問有什麼好處？", "options": ["內部稽核之可信度及價值獲得提升", "內部控制有效性提高", "公司治理層級提高", "公司評鑑結果良好"], "answer": "內部稽核之可信度及價值獲得提升", "note": "提供前瞻見解可提高稽核可信度與價值。"}, {"set": "第二回", "q": "內部稽核單位須評估下列與機構之治理、營運及資訊系統有關之風險，請問不包括下列哪一項？", "options": ["機構策略目標之達成", "財務及營運資訊之可靠性及完整性", "營運及計畫之效果及效率", "負責風險管理規劃"], "answer": "負責風險管理規劃", "note": "內部稽核評估風險管理，不應取代管理階層負責規劃。"}, {"set": "第二回", "q": "內部稽核單位須評估下列風險控制措施之適足性與有效性，請問不包括下列哪一項？", "options": ["機構策略目標之達成", "財務及營運資訊之絕對正確性及完整性", "營運及計畫之效果及效率", "法令、政策、程序及契約之遵循"], "answer": "財務及營運資訊之絕對正確性及完整性", "note": "重點是可靠性與完整性，不是保證絕對正確。"}, {"set": "第二回", "q": "針對稽核專案的執行，稽核主管須先與高階主管或董事會確認建立適當標準，以決定專案目的及目標達成之情形，如果沒有達成共識，請問要如何處理？", "options": ["內部稽核人員須與管理階層或董事會討論，以辨識適當之評估標準", "依據稽核準則執行", "按照公司章程處理", "依循往例處理"], "answer": "內部稽核人員須與管理階層或董事會討論，以辨識適當之評估標準", "note": "沒有共識時，應與管理階層或董事會討論評估標準。"}, {"set": "第二回", "q": "內部稽核人員須決定達成專案目的所需之適當及充分之資源。人員之指派不應考慮下列哪一個項目？", "options": ["專案性質與複雜度", "時間限制", "可用資源之評估", "具有爭議的項目"], "answer": "具有爭議的項目", "note": "資源配置通常考量性質、複雜度、時間限制與可用資源。"}, {"set": "第二回", "q": "內部稽核確認專案的範圍應包括下哪些內容的考慮？", "options": ["僅考慮在專案客戶控制下的那些系統和記錄", "在協力廠商控制下的相關的實物資產", "業務目標、結論和建議", "最終的業務溝通"], "answer": "業務目標、結論和建議", "note": "依你提供的答案，本題正解為業務目標、結論和建議。"}, {"set": "第二回", "q": "下列何者不是瞭解內部稽核工作之程序？", "options": ["參閱以前年度查核工作中，有關受查者內部稽核之資料", "查閱內部稽核報告，以獲得有關內部稽核工作範圍之詳細資訊", "內部稽核人員之工作範圍及其工作是否受有限制", "瞭解內部稽核人員如何依其對風險之評估，將其可用資源分配於財務或業務稽核工作之情形"], "answer": "內部稽核人員之工作範圍及其工作是否受有限制", "note": "依你提供的答案，本題正解為選項 C。"}, {"set": "第二回", "q": "下列何者不是查核人員為瞭解受查者之內部稽核工作，應向管理階層與內部稽核人員詢問？", "options": ["內部稽核人員在組織中之地位", "內部稽核工作是否由受有適當專業訓練者擔任", "內部稽核政策及程序", "內部稽核工作是否業經適當之規劃、督導及複核"], "answer": "內部稽核工作是否業經適當之規劃、督導及複核", "note": "依你提供的答案，本題正解為選項 D。"}, {"set": "第二回", "q": "下列何者不是評估內部稽核人員之適任性之考慮因素？", "options": ["內部稽核人員教育程度及專業經驗", "內部稽核人員之在職訓練", "內部稽核單位是否直接隸屬於董事會", "內部稽核人員工作之指派及其所受之督導與複核"], "answer": "內部稽核單位是否直接隸屬於董事會", "note": "隸屬董事會偏向客觀性或獨立性考量，不是適任性。"}, {"set": "第二回", "q": "查核人員評估內部稽核人員之客觀性時，有關內部稽核在組織中之地位應考慮因素，下列何者不是？", "options": ["內部稽核單位是否直接隸屬於董事會", "內部稽核主管是否可直接向審計委員會或監察人或獨立董事報告", "內部稽核主管之任免是否由董事會決定", "禁止內部稽核人員對其親屬擔任重要或敏感性職務之營運活動的稽核"], "answer": "禁止內部稽核人員對其親屬擔任重要或敏感性職務之營運活動的稽核", "note": "前三項屬組織地位，選項 D 偏個人利益衝突。"}, {"set": "第三回", "q": "有關稽核專案之監控，稽核主管須注意的事項，請問下列哪一項敘述不正確？", "options": ["內部稽核主管須建立並維持監控制度，以追蹤管理階層收受專案報告後之處理情形", "內部稽核主管須建立一套追蹤程式，以監控及確保管理階層業已採取有效之行動或管理階層已接受不採取行動之風險", "內部稽核單位須在委任客戶同意之範圍內，監控諮詢專案報告之處理情形", "內部稽核主管須自行決定監控諮詢專案報告之處理情形"], "answer": "內部稽核主管須自行決定監控諮詢專案報告之處理情形", "note": "諮詢專案追蹤通常在與客戶同意範圍內進行。"}, {"set": "第三回", "q": "內部稽核主管需要對稽核中發現的問題，採取追蹤機制，以追蹤管理層收到稽核報告，在改進初期，請問內部稽核主管的合適作法為下列哪一項？", "options": ["對問題改善措施和行動計畫進行判斷，並給予修訂意見", "對問題改善措施和行動計畫，直接給予修訂意見", "對問題改善措施和行動計畫，不一定要給予意見", "對問題改善措施和行動計畫，不必要給予意見"], "answer": "對問題改善措施和行動計畫進行判斷，並給予修訂意見", "note": "初期可審視改善計畫並提出修訂建議。"}, {"set": "第三回", "q": "在審核改進意見和持續監督過程中，內部稽核主管考慮下列因素，請問不包括下列哪一項？", "options": ["發現問題的風險影響程度", "改進措施需要付出的資源", "改進措施的可行性", "改進時間及這段時間內所涉及的營運管理"], "answer": "改進措施需要付出的資源", "note": "依你提供的答案，本題正解為資源。"}, {"set": "第三回", "q": "由誰建立並維持稽核專案報告的監控制度，以追蹤管理階層收受專案報告後之處理情形？", "options": ["內部稽核人員", "內部稽核主管", "內部稽核經理", "董事會"], "answer": "內部稽核主管", "note": "追蹤監控制度由內部稽核主管建立並維持。"}, {"set": "第三回", "q": "關於內部稽核主管對稽核中發現的問題，追蹤機制期間規定，以下說法正確的是？", "options": ["在改進初期、改進過程中，改進完成後，均需採取追蹤機制", "僅需在改進初期採取追蹤機制", "僅需在改進過程中採取追蹤機制", "僅需在改進完成後採取追蹤機制"], "answer": "在改進初期、改進過程中，改進完成後，均需採取追蹤機制", "note": "追蹤應涵蓋初期、過程與完成後。"}, {"set": "第三回", "q": "有時管理階層不接受稽核風險報告，其可能的原因是下列哪一項？", "options": ["風險不一定會發生", "風險日後自行會消失", "基於成本與效益考慮", "管理階層善於接受高風險高報酬的觀念"], "answer": "基於成本與效益考慮", "note": "管理階層可能因成本效益而接受某些風險。"}, {"set": "第三回", "q": "內部稽核主管若認定管理階層決定承擔之風險水準超過機構可承受之水準，下列敘述何者錯誤？", "options": ["因內部稽核單位須對與機構倫理有關之目的、計畫及活動，評估其設計、執行及成效", "內部稽核單位須評估各項控制之效果及效率，並促進控制之持續改善，以協助機構維持有效之控制", "內部稽核單位須評估舞弊發生之可能性，以及機構如何管理舞弊風險", "協助建立或改善風險管理過程時，內部稽核人員應實際管理風險，並承擔管理階層之責任"], "answer": "協助建立或改善風險管理過程時，內部稽核人員應實際管理風險，並承擔管理階層之責任", "note": "內部稽核不能承擔管理階層管理風險的責任。"}, {"set": "第三回", "q": "在判斷出管理階層對於風險影響做出正確認識，並推動其改變的前提下，內部稽核主管的合適作法包括下列哪些方式？", "options": ["需要將此重要事件告知公司董事會", "需要將此重要事件告知公司董事會", "並在必要的時候，執行糾正措施", "以上皆是"], "answer": "以上皆是", "note": "原題選項 A、B 重複，依你提供答案為以上皆是。"}, {"set": "第三回", "q": "當管理階層決定不對稽核發現的問題進行改善，並接受由此所產生的風險影響，內部稽核主管在此情況下，不應該在報告內記錄哪些資訊？", "options": ["針對稽核發現問題，評估對機構可能的影響", "通過以往的開展諮詢業務或先前專案的結果獲知高階管理層可接受的風險程度", "對超出風險承受範圍的事項進行說明，並記錄管理層和高階管理層不進行改進的原因", "記錄管理階層樂觀的看法"], "answer": "記錄管理階層樂觀的看法", "note": "報告應記錄風險、影響與原因，不是記錄樂觀看法。"}, {"set": "第三回", "q": "內部稽核主管在辨識與溝通稽核風險時，以下說法錯誤的是？", "options": ["內部稽核主管可透過確認性專案監控管理階層針對先前專案結果採取之行動進展情形，辨識管理階層所承擔之風險", "內部稽核主管可透過諮詢專案監控管理階層針對先前專案結果採取之行動進展情形，辨識管理階層所承擔之風險", "內部稽核主管負責處理應由管理階層承擔之風險", "內部稽核主管若認定管理階層決定承擔之風險水準超過機構可承受之水準，須就此事項與高階主管討論"], "answer": "內部稽核主管負責處理應由管理階層承擔之風險", "note": "管理階層承擔風險，內部稽核負責評估與溝通。"}, {"set": "第四回", "q": "依審計準則公報第四十三號：「查核財務報表對舞弊之考量」中對「舞弊」的定義，係指受查者內部人員故意使用欺騙方法之行為，以下哪一行為屬於舞弊？", "options": ["偽造竄改記錄及文件", "故意誤用會計原則", "挪用資產", "以上皆是"], "answer": "以上皆是", "note": "偽造、故意誤用會計原則、挪用資產均屬舞弊。"}, {"set": "第四回", "q": "我國審計準則公報第四十三號「查核財務報表對舞弊之考量」中，下列那些因素是造成「舞弊」之因素？", "options": ["誘因或壓力", "機會", "態度或行為合理化", "以上皆是"], "answer": "以上皆是", "note": "舞弊三角包含誘因或壓力、機會、合理化。"}, {"set": "第四回", "q": "員工或管理階層以非法之手段影響商業正常行為，藉此圖利本人或其他關係人，而此行為常與該權責相違。常見例子為收受回扣，近期也常我國各大知名企業層出不窮發生係指哪一種舞弊事件？", "options": ["貪汙", "挪用資產", "不實陳述", "以上皆是"], "answer": "貪汙", "note": "收受回扣屬貪汙類型。"}, {"set": "第四回", "q": "「公開發行公司建立內部控制制度處理準則」第11條第6項所規定內部稽核人員須具備哪一條件？", "options": ["擔任公開發行公司、證券或期貨相關機構之稽核人員滿二年以上者", "具有公開發行公司之業務工作經驗滿三年以上者", "具有電腦程式設計師或系統分析師等專業工作經驗滿三年以上者", "以上皆是"], "answer": "以上皆是", "note": "三項皆屬可符合條件。"}, {"set": "第四回", "q": "為有效發揮內部稽核功能，內部稽核人員應具備客觀、超然獨立與積極態度以及熟練之專業技能，包括 A、B、C？", "options": ["一定教育程度與適當教育背景", "精通內部稽核理論與實務", "取得適當之專業證照及資格", "以上皆是"], "answer": "以上皆是", "note": "教育背景、理論實務、證照資格皆重要。"}, {"set": "第四回", "q": "有關稽核人員之人際關係與溝通，下列敘述何者正確？", "options": ["稽核人員若能有效發揮提供諮詢服務的功能，公司就可以不用花更高之成本，從外界延請專家從事顧問服務", "稽核人員要能行銷「稽核是協助」之理念", "幫助公司落實內部控制，做到彈性化稽核", "以上皆是"], "answer": "以上皆是", "note": "三項皆為內部稽核溝通與諮詢價值。"}, {"set": "第四回", "q": "內部稽核角色可能存在哪種角色衝突？", "options": ["稽核者與被稽核者之間角色之衝突", "內部稽核人員對自身角色認知之觀點與被稽核者對內部稽核人員角色認知觀點之衝突", "稽核角色本身之衝突", "以上皆是"], "answer": "以上皆是", "note": "內部稽核角色衝突可能來自多個層面。"}];
+
+let quiz = [];
+let current = 0;
+let right = 0;
+let wrong = 0;
+let currentMode = '全部';
+let locked = false;
+let selectedNav = null;
+
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+function setActive(btn){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(btn) setActive(btn);
+}
+function startQuiz(mode, btn){
+  currentMode = mode;
+  const base = mode === '全部' ? QUESTIONS : QUESTIONS.filter(x=>x.set===mode);
+  quiz = shuffle(base).map(q=>({ ...q, shuffledOptions: shuffle(q.options) }));
+  current = 0; right = 0; wrong = 0; locked = false;
+  showPage('quiz');
+  setActive(btn);
+  renderQuestion();
+}
+function restartQuiz(){ startQuiz(currentMode); }
+function renderQuestion(){
+  locked = false;
+  const q = quiz[current];
+  document.getElementById('quizBadge').innerText = currentMode + '｜' + q.set;
+  document.getElementById('counter').innerText = `第 ${current+1} / ${quiz.length} 題`;
+  document.getElementById('bar').style.width = `${(current)/quiz.length*100}%`;
+  document.getElementById('questionText').innerText = q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('nextBtn').innerText = current === quiz.length-1 ? '看成績' : '下一題';
+  const opt = document.getElementById('options');
+  opt.innerHTML = '';
+  q.shuffledOptions.forEach((o,idx)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.innerText = ['A','B','C','D'][idx] + '. ' + o;
+    b.onclick = () => choose(o,b);
+    opt.appendChild(b);
+  });
+}
+function choose(ans, btn){
+  if(locked) return;
+  locked = true;
+  const q = quiz[current];
+  const all = document.querySelectorAll('.option');
+  all.forEach(b=>{
+    if(b.innerText.includes(q.answer)) b.classList.add('correct');
+  });
+  const fb = document.getElementById('feedback');
+  if(ans === q.answer){
+    right++;
+    fb.className = 'feedback ok';
+    fb.innerHTML = `✅ 答對！<br><b>答案：</b>${q.answer}<br><b>小提醒：</b>${q.note}`;
+  }else{
+    wrong++;
+    btn.classList.add('wrong');
+    saveWrong(q);
+    fb.className = 'feedback bad';
+    fb.innerHTML = `❌ 答錯。<br><b>正確答案：</b>${q.answer}<br><b>小提醒：</b>${q.note}`;
+  }
+}
+function nextQuestion(){
+  if(!locked){
+    alert('先選一個答案喔');
+    return;
+  }
+  if(current < quiz.length-1){
+    current++;
+    renderQuestion();
+  }else{
+    document.getElementById('bar').style.width = '100%';
+    showResult();
+  }
+}
+function showResult(){
+  showPage('result');
+  const total = quiz.length;
+  const score = Math.round(right/total*100);
+  document.getElementById('scoreText').innerText = score;
+  document.getElementById('rightText').innerText = right;
+  document.getElementById('wrongText').innerText = wrong;
+  document.getElementById('rateText').innerText = score + '%';
+}
+function getWrong(){
+  return JSON.parse(localStorage.getItem('sunnyAuditWrong') || '[]');
+}
+function saveWrong(q){
+  const list = getWrong();
+  if(!list.some(x=>x.q===q.q)) list.push(q);
+  localStorage.setItem('sunnyAuditWrong', JSON.stringify(list));
+}
+function showWrong(btn){
+  showPage('wrong', btn);
+  const list = getWrong();
+  const box = document.getElementById('wrongList');
+  if(list.length === 0){
+    box.innerHTML = '<p class="small">目前沒有錯題，超棒！</p>';
+    return;
+  }
+  box.innerHTML = list.map((q,i)=>`
+    <div class="listItem">
+      <span class="badge">${q.set}</span>
+      <b>${i+1}. ${q.q}</b>
+      <p class="small"><b>答案：</b>${q.answer}<br>${q.note}</p>
+    </div>`).join('');
+}
+function practiceWrong(){
+  const list = getWrong();
+  if(list.length===0){ alert('目前沒有錯題'); return; }
+  currentMode = '錯題本';
+  quiz = shuffle(list).map(q=>({ ...q, shuffledOptions: shuffle(q.options) }));
+  current = 0; right = 0; wrong = 0;
+  showPage('quiz');
+  renderQuestion();
+}
+function clearWrong(){
+  localStorage.removeItem('sunnyAuditWrong');
+  showWrong();
+}
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  localStorage.setItem('sunnyAuditDark', document.body.classList.contains('dark') ? '1' : '0');
+}
+if(localStorage.getItem('sunnyAuditDark')==='1') document.body.classList.add('dark');
+</script>
+</body>
+</html>
